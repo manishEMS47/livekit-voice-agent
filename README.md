@@ -1,104 +1,151 @@
-# Python Voice Agent + Optional Inbound Calls with Twilio
+# LiveKit Voice Agent with Python
 
-A basic example of a voice agent using LiveKit and Python. Has a few extras to get started:
-- Turn detection
-- Function calling
-  - Get weather
-  - Get current time
-- Summary usage logging
-- Optional inbound calls with Twilio
-- Krisp noise cancellation
-- Inbound calls switch to a model optimized for telephony
+A production-ready voice agent implementation using LiveKit and Python, featuring advanced conversational AI capabilities and optional telephony integration.
 
-## Dev Setup
+## Features
 
-Clone the repository then run the following commands to:
-- change directory to `livekit-voice-agent-python`
-- create a virtual environment and activate it
-- install dependencies
-- download files
+- **Intelligent Turn Detection** - Natural conversation flow with automatic speech detection
+- **Function Calling** - Extensible tool integration including:
+  - Weather information retrieval
+  - Real-time clock functionality
+- **Comprehensive Logging** - Usage analytics and conversation summaries
+- **Telephony Integration** - Inbound call support via Twilio SIP trunking
+- **Audio Enhancement** - Krisp noise cancellation for crystal-clear communication
+- **Optimized Models** - Automatic model switching for telephony vs. web-based interactions
 
-### Linux/macOS
-```console
+## Prerequisites
+
+- Python 3.8 or higher
+- LiveKit Cloud account or self-hosted LiveKit server
+- API keys for required services (OpenAI, ElevenLabs, Deepgram)
+- Optional: Twilio account for telephony features
+
+## Installation
+
+### Quick Start
+
+1. **Clone and navigate to the repository:**
+```bash
+git clone <repository-url>
 cd livekit-voice-agent-python
-python3 -m venv myenv
-source myenv/bin/activate
+```
+
+2. **Set up Python environment:**
+
+**Linux/macOS:**
+```bash
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 python3 agent.py download-files
 ```
 
-<details>
-  <summary>Windows instructions (click to expand)</summary>
-  
-```cmd
-:: Windows (CMD/PowerShell)
-cd livekit-voice-agent-python
-python3 -m venv myenv
-myenv\Scripts\activate
+**Windows:**
+```bash
+python3 -m venv venv
+venv\Scripts\activate
 pip install -r requirements.txt
+python3 agent.py download-files
 ```
-</details>
 
+### Configuration
 
-Set up the environment by copying `.env.example` to `.env.local` and filling in the required values:
+1. **Environment Setup:**
+   Copy the example environment file and configure your API credentials:
+```bash
+cp .env.example .env.local
+```
 
-- `LIVEKIT_URL`
-- `LIVEKIT_API_KEY`
-- `LIVEKIT_API_SECRET`
-- `OPENAI_API_KEY`
-- `ELEVEN_API_KEY`
-- `DEEPGRAM_API_KEY`
+2. **Required Environment Variables:**
+   ```
+   LIVEKIT_URL=your_livekit_server_url
+   LIVEKIT_API_KEY=your_api_key
+   LIVEKIT_API_SECRET=your_api_secret
+   OPENAI_API_KEY=your_openai_key
+   ELEVEN_API_KEY=your_elevenlabs_key
+   DEEPGRAM_API_KEY=your_deepgram_key
+   ```
 
-You can also do this automatically using the LiveKit CLI:
-
-```console
+3. **Automated Configuration (Optional):**
+   If using LiveKit Cloud, you can auto-configure using the CLI:
+```bash
 lk app env
 ```
 
-Run the agent:
+## Usage
 
-```console
+### Development Mode
+
+Start the agent in development mode:
+```bash
 python3 agent.py dev
 ```
 
-This agent requires a frontend application to communicate with. You can use one this example frontend in [livekit-nextjs-voice-agent-interface](https://github.com/kylecampbell/livekit-nextjs-voice-agent-interface)
+### Frontend Integration
 
+This agent requires a compatible frontend application. We recommend using the [LiveKit Next.js Voice Agent Interface](https://github.com/kylecampbell/livekit-nextjs-voice-agent-interface) for a complete solution.
 
-## Optional: Enable inbound calls with Twilio
+## Telephony Integration (Optional)
 
-The following steps expect you have LiveKit CLI installed. To install on macOS:
-```console
+Enable inbound phone calls through Twilio SIP integration.
+
+### Prerequisites
+
+- LiveKit CLI installed and authenticated
+- Twilio account with phone number
+- SIP trunk configuration
+
+### Installation Steps
+
+1. **Install LiveKit CLI (macOS):**
+```bash
 brew update && brew install livekit-cli
 ```
-Then authenticate with LiveKit Cloud:
-```console
+
+2. **Authenticate with LiveKit Cloud:**
+```bash
 lk cloud auth
 ```
-Then, follow instructions and log in from a browser.
 
-1. Create a Twilio account
-2. Get a Twilio phone number
-3. Create a SIP trunk
-- In Twilio console go to Explore products > Elastic SIP Trunking > SIP Trunks > Get started > Create a SIP Trunk, name it, then Save.
-4. Associate your LiveKit SIP URI with your SIP trunk
-- Go to Origination, select Add new Origination URI, go to your LiveKit Cloud project settings, copy your SIP URI, go back to Twilio console, paste the SIP URI, and add the `;transport=tcp`. So it looks like this: `<YOUR_SIP_URI>;transport=tcp`, then save.
-5. Associate your phone number with your SIP trunk
-- Finally, go to Number, select Add a number, select Add an Existing Number, select the phone number you got earlier, make Priority 1, Weight 1, and Add Selected. 
-6. Create LiveKit Cloud inbound trunk
-- View the file called `inbound-trunk.json` and notice the IP addresses in the allowed_addresses list are Twilio's US SIP signaling IP addresses. Update the list to include the regional IP addresses that are needed for your application.
-- Krisp noise cancellation is enabled in the file.
-- Create the inbound trunk using lk CLI:
-```console
+### Twilio Configuration
+
+1. **Create Twilio Resources:**
+   - Sign up for a Twilio account
+   - Purchase a phone number
+   - Create a new SIP trunk in the Twilio Console
+
+2. **Configure SIP Trunk:**
+   - Navigate to: Elastic SIP Trunking → SIP Trunks → Create
+   - Add Origination URI: `<YOUR_LIVEKIT_SIP_URI>;transport=tcp`
+   - Associate your phone number with priority 1, weight 1
+
+3. **Deploy LiveKit SIP Configuration:**
+
+   **Create Inbound Trunk:**
+```bash
 lk sip inbound create inbound-trunk.json
 ```
-7. Create LiveKit Cloud dispatch rule
-- Create the dispatch rule using lk CLI:
-```console
+
+   **Create Dispatch Rule:**
+```bash
 lk sip dispatch create dispatch-rule.json
 ```
-Now, you should be able to make inbound calls to your phone number.
 
+### Regional Configuration
 
+Update `inbound-trunk.json` with appropriate Twilio SIP signaling IP addresses for your region. The default configuration includes US IP addresses.
 
+## Architecture
 
+- **Agent Core** - Main conversation logic and state management
+- **Function Registry** - Extensible tool calling system
+- **Audio Pipeline** - Real-time audio processing with noise cancellation
+- **SIP Integration** - Telephony gateway for inbound calls
+- **Logging System** - Comprehensive usage and performance analytics
 
+## Support
+
+For issues and questions:
+- Check the [LiveKit Documentation](https://docs.livekit.io/)
+- Review existing GitHub issues
+- Contact support through your LiveKit Cloud dashboard
