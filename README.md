@@ -1,6 +1,140 @@
-# LiveKit Voice Agent with Python
+# LiveKit Voice Agent
 
 A production-ready voice agent implementation using LiveKit and Python, featuring advanced conversational AI capabilities and optional telephony integration.
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                           LiveKit Voice Agent Architecture                       │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Web Client    │    │  Phone System   │    │  Mobile App     │
+│   (Next.js)     │    │   (Twilio)      │    │   (React)       │
+└─────────┬───────┘    └─────────┬───────┘    └─────────┬───────┘
+          │                      │                      │
+          └──────────────────────┼──────────────────────┘
+                                 │
+                    ┌────────────▼────────────┐
+                    │     LiveKit Server      │
+                    │   (WebRTC Gateway)      │
+                    └────────────┬────────────┘
+                                 │
+                    ┌────────────▼────────────┐
+                    │   Voice Pipeline Agent  │
+                    │                         │
+                    │  ┌─────────────────┐   │
+                    │  │ Turn Detection  │   │
+                    │  │   (Silero)      │   │
+                    │  └─────────────────┘   │
+                    │                         │
+                    │  ┌─────────────────┐   │
+                    │  │ Audio Pipeline  │   │
+                    │  │ ┌─────────────┐ │   │
+                    │  │ │   Krisp     │ │   │
+                    │  │ │ (Noise      │ │   │
+                    │  │ │ Cancel)     │ │   │
+                    │  │ └─────────────┘ │   │
+                    │  └─────────────────┘   │
+                    └────────────┬────────────┘
+                                 │
+        ┌────────────────────────┼────────────────────────┐
+        │                        │                        │
+        ▼                        ▼                        ▼
+┌──────────────┐        ┌──────────────┐        ┌──────────────┐
+│ Speech-to-   │        │ Language     │        │ Text-to-     │
+│ Text (STT)   │        │ Model (LLM)  │        │ Speech (TTS) │
+│              │        │              │        │              │
+│ Deepgram API │        │  OpenAI API  │        │ ElevenLabs   │
+│              │        │              │        │ API          │
+└──────┬───────┘        └──────┬───────┘        └──────┬───────┘
+       │                       │                       │
+       │              ┌────────▼────────┐              │
+       │              │ Function Calling │              │
+       │              │                  │              │
+       │              │ ┌──────────────┐ │              │
+       │              │ │   Weather    │ │              │
+       │              │ │   Service    │ │              │
+       │              │ └──────────────┘ │              │
+       │              │                  │              │
+       │              │ ┌──────────────┐ │              │
+       │              │ │   Clock      │ │              │
+       │              │ │   Service    │ │              │
+       │              │ └──────────────┘ │              │
+       │              │                  │              │
+       │              │ ┌──────────────┐ │              │
+       │              │ │   Custom     │ │              │
+       │              │ │   Tools      │ │              │
+       │              │ └──────────────┘ │              │
+       │              └─────────────────┘              │
+       │                                               │
+       └───────────────────┐     ┌─────────────────────┘
+                           │     │
+                    ┌──────▼─────▼──────┐
+                    │   Logging &       │
+                    │   Analytics       │
+                    │                   │
+                    │ • Usage Metrics   │
+                    │ • Conversation    │
+                    │   Summaries       │
+                    │ • Performance     │
+                    │   Monitoring      │
+                    └───────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                              Data Flow Process                                   │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+1. Audio Input → 2. Noise Cancellation → 3. Speech Detection → 4. STT Processing
+                                                    ↓
+8. Audio Output ← 7. TTS Generation ← 6. Response Generation ← 5. LLM Processing
+                                                    ↓
+                                            Function Execution
+                                          (Weather, Clock, etc.)
+
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                            Telephony Integration                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+Phone Call → Twilio SIP → LiveKit SIP Gateway → Voice Agent → Response Pipeline
+     ↑                                                              ↓
+     └──────────────── Audio Response ←─────────────────────────────┘
+
+Regional SIP Configuration:
+• US East: 54.172.60.0, 54.244.51.0
+• US West: 54.171.127.192, 35.156.191.128  
+• Europe: 54.171.127.200, 35.156.191.140
+• Asia Pacific: 54.169.127.128, 52.65.191.64
+```
+
+## How It Works
+
+### 1. **Connection Establishment**
+- Users connect via web browsers, mobile apps, or phone calls
+- LiveKit server handles WebRTC connections and SIP integration
+- Agent automatically detects connection type and optimizes accordingly
+
+### 2. **Audio Processing Pipeline**
+- **Input**: Raw audio from user's microphone or phone
+- **Noise Cancellation**: Krisp AI removes background noise
+- **Turn Detection**: Silero VAD detects when user starts/stops speaking
+- **Speech-to-Text**: Deepgram converts speech to text in real-time
+
+### 3. **Intelligent Processing**
+- **Language Understanding**: OpenAI processes user intent
+- **Function Calling**: Agent can execute tools (weather, time, custom functions)
+- **Context Management**: Maintains conversation history and state
+
+### 4. **Response Generation**
+- **Text Generation**: LLM creates appropriate responses
+- **Text-to-Speech**: ElevenLabs converts text to natural speech
+- **Audio Delivery**: Processed audio sent back to user
+
+### 5. **Monitoring & Analytics**
+- Real-time performance metrics
+- Conversation logging and summaries
+- Usage analytics and optimization insights
 
 ## Features
 
@@ -25,14 +159,16 @@ A production-ready voice agent implementation using LiveKit and Python, featurin
 ### Quick Start
 
 1. **Clone and navigate to the repository:**
+
 ```bash
-git clone <repository-url>
-cd livekit-voice-agent-python
+git clone https://github.com/danieladdisonorg/livekit-voice-agent.git
+cd livekit-voice-agent
 ```
 
 2. **Set up Python environment:**
 
 **Linux/macOS:**
+
 ```bash
 python3 -m venv venv
 source venv/bin/activate
@@ -41,6 +177,7 @@ python3 agent.py download-files
 ```
 
 **Windows:**
+
 ```bash
 python3 -m venv venv
 venv\Scripts\activate
@@ -52,6 +189,7 @@ python3 agent.py download-files
 
 1. **Environment Setup:**
    Copy the example environment file and configure your API credentials:
+
 ```bash
 cp .env.example .env.local
 ```
@@ -68,6 +206,7 @@ cp .env.example .env.local
 
 3. **Automated Configuration (Optional):**
    If using LiveKit Cloud, you can auto-configure using the CLI:
+
 ```bash
 lk app env
 ```
@@ -77,6 +216,7 @@ lk app env
 ### Development Mode
 
 Start the agent in development mode:
+
 ```bash
 python3 agent.py dev
 ```
@@ -98,11 +238,13 @@ Enable inbound phone calls through Twilio SIP integration.
 ### Installation Steps
 
 1. **Install LiveKit CLI (macOS):**
+
 ```bash
 brew update && brew install livekit-cli
 ```
 
 2. **Authenticate with LiveKit Cloud:**
+
 ```bash
 lk cloud auth
 ```
@@ -122,11 +264,13 @@ lk cloud auth
 3. **Deploy LiveKit SIP Configuration:**
 
    **Create Inbound Trunk:**
+
 ```bash
 lk sip inbound create inbound-trunk.json
 ```
 
    **Create Dispatch Rule:**
+
 ```bash
 lk sip dispatch create dispatch-rule.json
 ```
