@@ -6,7 +6,7 @@ A production-ready voice agent implementation using LiveKit and Python, featurin
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│                           LiveKit Voice Agent Architecture                       │
+│                           LiveKit Voice Agent Architecture                      │
 └─────────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -24,19 +24,19 @@ A production-ready voice agent implementation using LiveKit and Python, featurin
                     ┌────────────▼────────────┐
                     │   Voice Pipeline Agent  │
                     │                         │
-                    │  ┌─────────────────┐   │
-                    │  │ Turn Detection  │   │
-                    │  │   (Silero)      │   │
-                    │  └─────────────────┘   │
+                    │   ┌─────────────────┐   │
+                    │   │ Turn Detection  │   │
+                    │   │   (Silero)      │   │
+                    │   └─────────────────┘   │
                     │                         │
-                    │  ┌─────────────────┐   │
-                    │  │ Audio Pipeline  │   │
-                    │  │ ┌─────────────┐ │   │
-                    │  │ │   Krisp     │ │   │
-                    │  │ │ (Noise      │ │   │
-                    │  │ │ Cancel)     │ │   │
-                    │  │ └─────────────┘ │   │
-                    │  └─────────────────┘   │
+                    │   ┌─────────────────┐   │
+                    │   │ Audio Pipeline  │   │
+                    │   │ ┌─────────────┐ │   │
+                    │   │ │   Krisp     │ │   │
+                    │   │ │ (Noise      │ │   │
+                    │   │ │ Cancel)     │ │   │
+                    │   │ └─────────────┘ │   │
+                    │   └─────────────────┘   │
                     └────────────┬────────────┘
                                  │
         ┌────────────────────────┼────────────────────────┐
@@ -50,24 +50,24 @@ A production-ready voice agent implementation using LiveKit and Python, featurin
 │              │        │              │        │ API          │
 └──────┬───────┘        └──────┬───────┘        └──────┬───────┘
        │                       │                       │
-       │              ┌────────▼────────┐              │
-       │              │ Function Calling │              │
-       │              │                  │              │
-       │              │ ┌──────────────┐ │              │
-       │              │ │   Weather    │ │              │
-       │              │ │   Service    │ │              │
-       │              │ └──────────────┘ │              │
-       │              │                  │              │
-       │              │ ┌──────────────┐ │              │
-       │              │ │   Clock      │ │              │
-       │              │ │   Service    │ │              │
-       │              │ └──────────────┘ │              │
-       │              │                  │              │
-       │              │ ┌──────────────┐ │              │
-       │              │ │   Custom     │ │              │
-       │              │ │   Tools      │ │              │
-       │              │ └──────────────┘ │              │
-       │              └─────────────────┘              │
+       │              ┌─────────▼────────┐             │
+       │              │ Function Calling │             │
+       │              │                  │             │
+       │              │ ┌──────────────┐ │             │
+       │              │ │   Weather    │ │             │
+       │              │ │   Service    │ │             │
+       │              │ └──────────────┘ │             │
+       │              │                  │             │
+       │              │ ┌──────────────┐ │             │
+       │              │ │   Clock      │ │             │
+       │              │ │   Service    │ │             │
+       │              │ └──────────────┘ │             │
+       │              │                  │             │
+       │              │ ┌──────────────┐ │             │
+       │              │ │   Custom     │ │             │
+       │              │ │   Tools      │ │             │
+       │              │ └──────────────┘ │             │
+       │              └──────────────────┘             │
        │                                               │
        └───────────────────┐     ┌─────────────────────┘
                            │     │
@@ -83,7 +83,7 @@ A production-ready voice agent implementation using LiveKit and Python, featurin
                     └───────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│                              Data Flow Process                                   │
+│                              Data Flow Process                                  │
 └─────────────────────────────────────────────────────────────────────────────────┘
 
 1. Audio Input → 2. Noise Cancellation → 3. Speech Detection → 4. STT Processing
@@ -94,7 +94,7 @@ A production-ready voice agent implementation using LiveKit and Python, featurin
                                           (Weather, Clock, etc.)
 
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│                            Telephony Integration                                 │
+│                            Telephony Integration                                │
 └─────────────────────────────────────────────────────────────────────────────────┘
 
 Phone Call → Twilio SIP → LiveKit SIP Gateway → Voice Agent → Response Pipeline
